@@ -79,9 +79,9 @@ function App() {
       {/* Start "Main Section" */}
       <div className="container py-6">
         <div className="flex flex-col space-y-4">
-          <div className="grid h-full grid-rows-2 gap-6 lg:grid-cols-2 lg:grid-rows-1">
+          <div className="grid h-full grid-cols-1 grid-rows-2 gap-6 lg:grid-cols-2 lg:grid-rows-1">
             {/* Start "Recipe text" */}
-            <div>
+            <div className="flex">
               <Textarea
                 placeholder="Write your recipe here"
                 className={cn(
@@ -147,7 +147,7 @@ function App() {
                 ) : null}
               </div>
               {parsedRecipe.tokens?.length > 0 && (
-                <div className="recipe-content whitespace-pre">
+                <div className="recipe-content whitespace-pre text-wrap">
                   <h2 className="text-lg font-semibold mb-2 ">Instructions</h2>
 
                   {parsedRecipe.tokens?.slice(firstIndex).map((token, i) => {
@@ -216,7 +216,6 @@ function App() {
                 </div>
               )}
               <div className="flex flex-wrap gap-2 pt-12">
-                {/* @ts-ignore */}
                 {tags.map((tag) => (
                   <Badge key={tag}>
                     <a
