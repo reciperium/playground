@@ -81,7 +81,7 @@ function App() {
         <div className="flex flex-col space-y-4">
           <div className="grid h-full grid-cols-1 grid-rows-2 gap-6 lg:grid-cols-2 lg:grid-rows-1">
             {/* Start "Recipe text" */}
-            <div className="flex">
+            <div className="flex flex-col">
               <Textarea
                 placeholder="Write your recipe here"
                 className={cn(
@@ -92,7 +92,7 @@ function App() {
                 value={recipe}
                 onChange={(e) => setRecipe(e.target.value)}
               />
-              <p className="text-red-400 whitespace-pre">{error?.message}</p>
+              <p className="text-red-400 whitespace-pre font-mono text-sm">{error?.message}</p>
             </div>
             {/* End "Recipe text" */}
 
