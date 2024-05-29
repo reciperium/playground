@@ -5,7 +5,7 @@ import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
-  base: "/playground/",
+  base: "/",
   plugins: [react(), wasm(),
   topLevelAwait()],
   resolve: {
