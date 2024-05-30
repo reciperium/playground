@@ -4,6 +4,7 @@ import { Textarea } from "./components/ui/textarea";
 import { parse, Recipe, WasmParserError } from "@reciperium/recipe-parser-wasm";
 import { cn } from "./lib/utils";
 import { Badge } from "./components/ui/badge";
+import { Github } from "lucide-react";
 
 const createTitle = (
   value1?: string | null,
@@ -92,7 +93,9 @@ function App() {
                 value={recipe}
                 onChange={(e) => setRecipe(e.target.value)}
               />
-              <p className="text-red-400 whitespace-pre font-mono text-sm">{error?.message}</p>
+              <p className="text-red-400 whitespace-pre font-mono text-sm">
+                {error?.message}
+              </p>
             </div>
             {/* End "Recipe text" */}
 
@@ -236,30 +239,56 @@ function App() {
       {/* End "Main Section" */}
 
       {/* Start "Footer" */}
-      <div className="flex flex-col w-full gap-4 items-center justify-center py-4 bg-gray-100 dark:bg-gray-800 inset-x-0 bottom-0 relative lg:absolute">
-
-
-        <div className="grid grid-cols-1 gap-4 text-sm">
-
-          <a
-            href="https://github.com/reciperium/recipe-lang/blob/main/spec.md"
-            className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
-            target="_blank"
-          >
-            Recipe Lang Specification
-          </a>
-          <a
-            href="https://www.reciperium.com"
-            className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
-            target="_blank"
-          >
-            Reciperium
-          </a>
-
+      <div className="flex flex-col w-full gap-4 items-center justify-center p-6 md:py-12 bg-gray-100 dark:bg-gray-800 inset-x-0 bottom-0 relative lg:absolute">
+        <div className="container max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-8 text-sm justify-between w-full">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl">Reciperium</h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              A platform for sharing and discovering recipes.
+            </p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Built with ❤️ by{" "}
+              <a
+                href="https://woile.dev"
+                target="_blank"
+                className="text-blue-500 hover:text-blue-600"
+              >
+                woile
+              </a>
+            </p>
+          </div>
+          <div className="flex w-full justify-between">
+            <div className="flex flex-col gap-4 text-left">
+              <h3 className="text-lg">Resources</h3>
+              <a
+                href="https://github.com/reciperium/recipe-lang/blob/main/spec.md"
+                className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
+                target="_blank"
+              >
+                Recipe Lang Specification
+              </a>
+              <a
+                href="https://www.reciperium.com"
+                className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
+                target="_blank"
+              >
+                Reciperium
+              </a>
+            </div>
+            <div className="flex flex-col justify-center justify-self-center self-end">
+              <div className="flex">
+                {/* Github icon */}
+                <a
+                  href="https://github.com/reciperium/playground"
+                  className="flex flex-wrap items-end self-end  after:content-['_↗'] hover:text-gray-400 dark:hover:text-gray-200"
+                  target="_blank"
+                >
+                  <Github size={24} />
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="text-xs text-gray-600 dark:text-gray-400">
-          2024 Reciperium
-        </p>
       </div>
       {/* End "Footer" */}
     </div>
