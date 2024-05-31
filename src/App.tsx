@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { parse, Recipe, WasmParserError } from "@reciperium/recipe-parser-wasm";
 import { cn } from "./lib/utils";
@@ -10,6 +10,7 @@ import { createTheme } from "@uiw/codemirror-themes";
 import { linter, Diagnostic } from "@codemirror/lint";
 
 import CodeMirror from "@uiw/react-codemirror";
+
 const createTitle = (
   value1?: string | null,
   value2?: string | null
@@ -100,38 +101,43 @@ function App() {
           <div className="flex flex-col lg:flex-row justify-center gap-6 ">
             {/* Start "Recipe text" */}
             <div className="flex flex-col rounded-md lg:w-1/2 text-wrap ">
-              <CodeMirror
-                value={recipe}
-                onChange={onChange}
-                minHeight="300px"
-                maxHeight="500px"
-                theme={recipriumTheme}
-                basicSetup={{
-                  allowMultipleSelections: true,
-                  highlightSelectionMatches: true,
-                  lineNumbers: false,
-                  foldGutter: false,
-                  searchKeymap: true,
-                  lintKeymap: false,
-                }}
-                extensions={[
-                  EditorView.lineWrapping,
-                  linter((_view: EditorView) => {
-                    let diagnostics: Diagnostic[] = [];
-                    if (error?.offset) {
-                      diagnostics.push({
-                        from: error?.offset - 3,
-                        to: error?.offset + 2,
-                        severity: "error",
-                        message: error?.message,
-                      });
-                    }
-                    return diagnostics;
-                  }),
-                ]}
-                className={cn(error?.message && "err")}
-              />
-
+              <Suspense
+                fallback={
+                  <div className="h-[300px] animate-pulse bg-slate-100 rounded-md" />
+                }
+              >
+                <CodeMirror
+                  value={recipe}
+                  onChange={onChange}
+                  minHeight="300px"
+                  maxHeight="500px"
+                  theme={recipriumTheme}
+                  basicSetup={{
+                    allowMultipleSelections: true,
+                    highlightSelectionMatches: true,
+                    lineNumbers: false,
+                    foldGutter: false,
+                    searchKeymap: true,
+                    lintKeymap: false,
+                  }}
+                  extensions={[
+                    EditorView.lineWrapping,
+                    linter((_view: EditorView) => {
+                      let diagnostics: Diagnostic[] = [];
+                      if (error?.offset) {
+                        diagnostics.push({
+                          from: error?.offset - 3,
+                          to: error?.offset + 2,
+                          severity: "error",
+                          message: error?.message,
+                        });
+                      }
+                      return diagnostics;
+                    }),
+                  ]}
+                  className={cn(error?.message && "err")}
+                />
+              </Suspense>
               <div className="mt-4">
                 <p className="text-red-400 whitespace-pre font-mono text-sm">
                   {error?.message}
