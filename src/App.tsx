@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
-import { Separator } from "./components/ui/separator";
-import { Textarea } from "./components/ui/textarea";
+import { useCallback, useEffect, useState } from "react";
+
 import { parse, Recipe, WasmParserError } from "@reciperium/recipe-parser-wasm";
 import { cn } from "./lib/utils";
 import { Badge } from "./components/ui/badge";
 import { Github } from "lucide-react";
+import { EditorView } from "codemirror";
 
+import { createTheme } from "@uiw/codemirror-themes";
+import { linter, Diagnostic } from "@codemirror/lint";
+
+import CodeMirror from "@uiw/react-codemirror";
 const createTitle = (
   value1?: string | null,
   value2?: string | null
@@ -19,6 +23,16 @@ const createTitle = (
   }
   return "at will";
 };
+
+const recipriumTheme = createTheme({
+  theme: "light",
+  settings: {
+    fontSize: "11pt",
+    fontFamily: "sans-serif",
+    background: "#ffffff",
+  },
+  styles: [],
+});
 
 function App() {
   const [recipe, setRecipe] = useState(
@@ -38,7 +52,10 @@ function App() {
   );
   const [parsedRecipe, setParsedRecipe] = useState({} as Recipe);
   const [error, setError] = useState({} as WasmParserError | null);
-
+  const onChange = useCallback((val: string) => {
+    console.log("val:", val);
+    setRecipe(val);
+  }, []);
   useEffect(() => {
     try {
       const parsed: Recipe = parse(recipe);
@@ -63,44 +80,68 @@ function App() {
     ) || 0;
 
   return (
-    <div className="flex-col h-screen w-screen ">
+    <div className="grid grid-rows-layout h-screen w-screen ">
       {/* Start "Navbar" */}
-      <div className="container w-full flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
-        <div className="flex shrink-0 gap-2 content-end items-stretch">
-          <h2 className="text-lg font-semibold self-end">Recipe Lang</h2>
-        </div>
-        <div className="ml-auto flex w-full space-x-2 sm:justify-end">
-          Playground
+      <div className="w-full border-b">
+        <div className="container w-full flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16 ">
+          <div className="flex shrink-0 gap-2 content-end items-stretch">
+            <h2 className="text-lg font-semibold self-end">Recipe Lang</h2>
+          </div>
+          <div className="ml-auto flex w-full space-x-2 sm:justify-end">
+            Playground
+          </div>
         </div>
       </div>
       {/* End "Navbar" */}
 
-      <Separator />
-
       {/* Start "Main Section" */}
-      <div className="container py-6">
-        <div className="flex flex-col space-y-4">
-          <div className="grid h-full grid-cols-1 grid-rows-2 gap-6 lg:grid-cols-2 lg:grid-rows-1">
+      <div className="container py-6 ">
+        <div className="flex flex-col space-y-4 ">
+          <div className="flex flex-col lg:flex-row justify-center gap-6 ">
             {/* Start "Recipe text" */}
-            <div className="flex flex-col">
-              <Textarea
-                placeholder="Write your recipe here"
-                className={cn(
-                  "h-full min-h-[300px] lg:min-h-[500px] xl:min-h-[500px]",
-                  error?.message &&
-                    "focus:ring-red-500 border-red-500 ring-offset-red-500 focus-visible:ring-red-100 "
-                )}
+            <div className="flex flex-col rounded-md lg:w-1/2 text-wrap ">
+              <CodeMirror
                 value={recipe}
-                onChange={(e) => setRecipe(e.target.value)}
+                onChange={onChange}
+                minHeight="300px"
+                maxHeight="500px"
+                theme={recipriumTheme}
+                basicSetup={{
+                  allowMultipleSelections: true,
+                  highlightSelectionMatches: true,
+                  lineNumbers: false,
+                  foldGutter: false,
+                  searchKeymap: true,
+                  lintKeymap: false,
+                }}
+                extensions={[
+                  EditorView.lineWrapping,
+                  linter((_view: EditorView) => {
+                    let diagnostics: Diagnostic[] = [];
+                    if (error?.offset) {
+                      diagnostics.push({
+                        from: error?.offset - 3,
+                        to: error?.offset + 2,
+                        severity: "error",
+                        message: error?.message,
+                      });
+                    }
+                    return diagnostics;
+                  }),
+                ]}
+                className={cn(error?.message && "err")}
               />
-              <p className="text-red-400 whitespace-pre font-mono text-sm">
-                {error?.message}
-              </p>
+
+              <div className="mt-4">
+                <p className="text-red-400 whitespace-pre font-mono text-sm">
+                  {error?.message}
+                </p>
+              </div>
             </div>
             {/* End "Recipe text" */}
 
             {/* Start "Render recipe" */}
-            <div className="rounded-md border bg-muted p-4">
+            <div className="rounded-md border bg-muted p-8 lg:w-1/2">
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                 {parsedRecipe.ingredients?.length > 0 ||
                 parsedRecipe.recipes_refs?.length > 0 ? (
@@ -239,7 +280,7 @@ function App() {
       {/* End "Main Section" */}
 
       {/* Start "Footer" */}
-      <div className="flex flex-col w-full gap-4 items-center justify-center p-6 md:py-12 bg-gray-100 dark:bg-gray-800 inset-x-0 bottom-0 relative lg:absolute">
+      <div className="flex flex-col w-full gap-4 items-center justify-center p-6 md:py-12 bg-gray-100 dark:bg-gray-800 inset-x-0 relative ">
         <div className="container max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-8 text-sm justify-between w-full">
           <div className="flex flex-col gap-4">
             <h2 className="text-xl">Reciperium</h2>
