@@ -10,6 +10,7 @@ import { createTheme } from "@uiw/codemirror-themes";
 import { linter, Diagnostic } from "@codemirror/lint";
 
 import CodeMirror from "@uiw/react-codemirror";
+import { RecipeRef } from "./components/recipe-ui/recipe-ref";
 
 const createTitle = (
   value1?: string | null,
@@ -29,7 +30,6 @@ const recipriumTheme = createTheme({
   theme: "light",
   settings: {
     fontSize: "11pt",
-    fontFamily: "sans-serif",
     background: "#ffffff",
   },
   styles: [],
@@ -81,7 +81,7 @@ function App() {
     ) || 0;
 
   return (
-    <div className="grid grid-rows-layout h-screen w-screen ">
+    <div className="grid grid-rows-layout h-screen w-screen antialiased">
       {/* Start "Navbar" */}
       <div className="w-full border-b">
         <div className="container w-full flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16 ">
@@ -171,10 +171,10 @@ function App() {
                           key={ref.name}
                           className="mb-2 text-left antialiased"
                         >
-                          <span className="mr-2">
+                          <span>
                             {ref.quantity} {ref.unit}
-                          </span>
-                          {ref.name}
+                          </span>{" "}
+                          <RecipeRef link={ref.name} />
                         </li>
                       ))}
                     </ul>
@@ -237,7 +237,8 @@ function App() {
                             tabIndex="0"
                             className="mb-1"
                           >
-                            {token.content.name}
+                            <RecipeRef link={token.content.name} />
+                            {/* {token.content.name} */}
                             {/* <Suspense fallback={<RecipeRefLoader />}>
                           <RecipeRef name={token.content.name} />
                         </Suspense> */}
