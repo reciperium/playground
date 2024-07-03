@@ -11,6 +11,7 @@ import { linter, Diagnostic } from "@codemirror/lint";
 
 import CodeMirror from "@uiw/react-codemirror";
 import { RecipeRef } from "./components/recipe-ui/recipe-ref";
+import { ShareButton } from "./components/recipe-ui/share";
 
 const createTitle = (
   value1?: string | null,
@@ -36,8 +37,11 @@ const recipriumTheme = createTheme({
 });
 
 function App() {
-  const [recipe, setRecipe] = useState(
-    `>> tags: vegan, high-protein, high-fiber
+  const currentUrl = new URL(window.location.href);
+  const shareParam = currentUrl.searchParams.get("share");
+  const defaultRecipe = shareParam
+    ? atob(shareParam)
+    : `>> tags: vegan, high-protein, high-fiber
     >> lang: en
 
     Add {boiled chickpeas}(400 gr) to the &{blender} with {garlic}(1),
@@ -47,10 +51,10 @@ function App() {
 
     Serve or store.
     `
-      .split("\n")
-      .map((s) => s.trim())
-      .join("\n")
-  );
+        .split("\n")
+        .map((s) => s.trim())
+        .join("\n");
+  const [recipe, setRecipe] = useState(defaultRecipe);
   const [parsedRecipe, setParsedRecipe] = useState({} as Recipe);
   const [error, setError] = useState({} as WasmParserError | null);
   const onChange = useCallback((val: string) => {
@@ -147,7 +151,10 @@ function App() {
             {/* End "Recipe text" */}
 
             {/* Start "Render recipe" */}
-            <div className="rounded-md border bg-muted p-8 lg:w-1/2">
+            <div className="relative rounded-md border bg-muted p-6 lg:w-1/2">
+              <div className="absolute  top-0 right-0 pt-3 pr-3">
+                <ShareButton recipe={recipe} />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                 {parsedRecipe.ingredients?.length > 0 ||
                 parsedRecipe.recipes_refs?.length > 0 ? (
