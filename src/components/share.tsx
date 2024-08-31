@@ -16,6 +16,7 @@ const ShareButton = ({ recipe }: Props) => {
       type="button"
       onClick={handleClick}
       className="rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-300 p-1"
+      title="Share the recipe"
     >
       <Share2 size={16} />
     </button>

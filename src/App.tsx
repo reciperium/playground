@@ -1,64 +1,43 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
-
 import { parse, Recipe, WasmParserError } from "@reciperium/recipe-parser-wasm";
-import { cn } from "./lib/utils";
-import { Badge } from "./components/ui/badge";
 import { Github } from "lucide-react";
-import { EditorView } from "codemirror";
+import RecipeCard from "./components/recipe-card";
+import { ind } from "@reciperium/react-recipe";
+import Editor from "./components/editor";
+import { ClearButton } from "./components/clear";
+import { CopyButton } from "./components/copy";
 
-import { createTheme } from "@uiw/codemirror-themes";
-import { linter, Diagnostic } from "@codemirror/lint";
+const BaseRecipe = ind`>> tags: vegan, high-protein, high-fiber
+>> lang: en
 
-import CodeMirror from "@uiw/react-codemirror";
-import { RecipeRef } from "./components/recipe-ui/recipe-ref";
-import { ShareButton } from "./components/recipe-ui/share";
+Add {boiled chickpeas}(400 gr) to the &{blender} with {garlic}(1),
+{tahini}(2 tsp), {lemon}(1/2), {olive oil}(2 tsp), {salt} and {pepper}.
 
-const createTitle = (
-  value1?: string | null,
-  value2?: string | null
-): string | undefined => {
-  if (value1 && value2) {
-    return `${value1} ${value2}`;
-  } else if (value1) {
-    return value1;
-  } else if (value2) {
-    return value2;
+Blend for t{3 minutes}.
+
+Serve or store.
+`;
+
+function atobWithDefault(value: string, defaultValue: string) {
+  try {
+    return atob(value);
+  } catch (e) {
+    return defaultValue;
   }
-  return "at will";
-};
-
-const recipriumTheme = createTheme({
-  theme: "light",
-  settings: {
-    fontSize: "11pt",
-    background: "#ffffff",
-  },
-  styles: [],
-});
+}
 
 function App() {
   const currentUrl = new URL(window.location.href);
   const shareParam = currentUrl.searchParams.get("share");
+
   const defaultRecipe = shareParam
-    ? atob(shareParam)
-    : `>> tags: vegan, high-protein, high-fiber
-    >> lang: en
+    ? atobWithDefault(shareParam, ind`Failed to decode the recipe`)
+    : BaseRecipe;
 
-    Add {boiled chickpeas}(400 gr) to the &{blender} with {garlic}(1),
-    {tahini}(2 tsp), {lemon}(1/2), {olive oil}(2 tsp), {salt} and {pepper}.
-
-    Blend for t{3 minutes}.
-
-    Serve or store.
-    `
-        .split("\n")
-        .map((s) => s.trim())
-        .join("\n");
   const [recipe, setRecipe] = useState(defaultRecipe);
   const [parsedRecipe, setParsedRecipe] = useState({} as Recipe);
   const [error, setError] = useState({} as WasmParserError | null);
   const onChange = useCallback((val: string) => {
-    console.log("val:", val);
     setRecipe(val);
   }, []);
   useEffect(() => {
@@ -72,17 +51,6 @@ function App() {
       setError(error);
     }
   }, [recipe]);
-
-  const tags =
-    parsedRecipe.metadata
-      ?.get("tags")
-      ?.split(",")
-      .map((t) => t.trim()) || [];
-
-  const firstIndex =
-    parsedRecipe.tokens?.findIndex(
-      (token) => token.token !== "Metadata" && token.token !== "Space"
-    ) || 0;
 
   return (
     <div className="grid grid-rows-layout h-screen w-screen antialiased">
@@ -104,42 +72,17 @@ function App() {
         <div className="flex flex-col space-y-4 ">
           <div className="flex flex-col lg:flex-row justify-center gap-6 ">
             {/* Start "Recipe text" */}
-            <div className="flex flex-col rounded-md lg:w-1/2 text-wrap ">
+            <div className="flex flex-col rounded-md lg:w-1/2 text-wrap md:h-[300px]">
               <Suspense
                 fallback={
                   <div className="h-[300px] animate-pulse bg-slate-100 rounded-md" />
                 }
               >
-                <CodeMirror
+                <Editor
+                  error={error}
+                  className="w-full h-full font-sans border rounded-sm bg-background"
                   value={recipe}
                   onChange={onChange}
-                  minHeight="300px"
-                  maxHeight="500px"
-                  theme={recipriumTheme}
-                  basicSetup={{
-                    allowMultipleSelections: true,
-                    highlightSelectionMatches: true,
-                    lineNumbers: false,
-                    foldGutter: false,
-                    searchKeymap: true,
-                    lintKeymap: false,
-                  }}
-                  extensions={[
-                    EditorView.lineWrapping,
-                    linter((_view: EditorView) => {
-                      let diagnostics: Diagnostic[] = [];
-                      if (error?.offset) {
-                        diagnostics.push({
-                          from: error?.offset - 3,
-                          to: error?.offset + 2,
-                          severity: "error",
-                          message: error?.message,
-                        });
-                      }
-                      return diagnostics;
-                    }),
-                  ]}
-                  className={cn(error?.message && "err")}
                 />
               </Suspense>
               <div className="mt-4">
@@ -147,145 +90,15 @@ function App() {
                   {error?.message}
                 </p>
               </div>
+              <div className="flex gap-4 justify-end">
+                <ClearButton onClick={() => setRecipe("")} />
+                <CopyButton value={recipe} />
+              </div>
             </div>
             {/* End "Recipe text" */}
-
             {/* Start "Render recipe" */}
-            <div className="relative rounded-md border bg-muted p-6 lg:w-1/2">
-              <div className="absolute  top-0 right-0 pt-3 pr-3">
-                <ShareButton recipe={recipe} />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 md:gap-4">
-                {parsedRecipe.ingredients?.length > 0 ||
-                parsedRecipe.recipes_refs?.length > 0 ? (
-                  <div className="pb-4">
-                    <h2 className="text-lg font-semibold">Ingredients</h2>
-                    <ul className="mt-2 mb-6 list-disc list-inside">
-                      {parsedRecipe.ingredients.map((ingredient) => (
-                        <li
-                          key={ingredient.name}
-                          className="mb-2 text-left antialiased"
-                        >
-                          <span>
-                            {ingredient.quantity} {ingredient.unit}
-                          </span>{" "}
-                          {ingredient.name}{" "}
-                        </li>
-                      ))}
-
-                      {parsedRecipe.recipes_refs.map((ref) => (
-                        <li
-                          key={ref.name}
-                          className="mb-2 text-left antialiased"
-                        >
-                          <span>
-                            {ref.quantity} {ref.unit}
-                          </span>{" "}
-                          <RecipeRef link={ref.name} />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {parsedRecipe.materials?.length > 0 ? (
-                  <div>
-                    <h2 className="text-lg font-semibold">Materials</h2>
-                    <ul className="mt-2 mb-6 list-disc list-inside">
-                      {parsedRecipe.materials?.map((material) => (
-                        <li
-                          key={material.name}
-                          className="mb-2 text-left antialiased"
-                        >
-                          {material.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </div>
-              {parsedRecipe.tokens?.length > 0 && (
-                <div className="recipe-content whitespace-pre text-wrap">
-                  <h2 className="text-lg font-semibold mb-2 ">Instructions</h2>
-
-                  {parsedRecipe.tokens?.slice(firstIndex).map((token, i) => {
-                    switch (token.token) {
-                      case "Space":
-                        return token.content;
-                      case "Word":
-                        return (
-                          <span key={i} className="mb-1">
-                            {token.content}
-                          </span>
-                        );
-                      case "Ingredient":
-                        return (
-                          <span
-                            title={createTitle(
-                              token.content.quantity,
-                              token.content.unit
-                            )}
-                            // @ts-ignore
-                            tabIndex="0"
-                            className="bg-fuchsia-100 dark:bg-fuchsia-800 mb-1"
-                            key={i}
-                          >
-                            {token.content.name}
-                          </span>
-                        );
-                      case "RecipeRef":
-                        return (
-                          <span
-                            key={i}
-                            title={createTitle(
-                              token.content.quantity,
-                              token.content.unit
-                            )}
-                            // @ts-ignore
-                            tabIndex="0"
-                            className="mb-1"
-                          >
-                            <RecipeRef link={token.content.name} />
-                            {/* {token.content.name} */}
-                            {/* <Suspense fallback={<RecipeRefLoader />}>
-                          <RecipeRef name={token.content.name} />
-                        </Suspense> */}
-                          </span>
-                        );
-                      case "Material":
-                        return (
-                          <span
-                            className="bg-yellow-100 dark:bg-yellow-800 mb-1"
-                            key={i}
-                          >
-                            {token.content}
-                          </span>
-                        );
-                      case "Timer":
-                        return (
-                          <span
-                            className="bg-orange-100 dark:bg-orange-800 mb-1"
-                            key={i}
-                          >
-                            {token.content}
-                          </span>
-                        );
-                    }
-                  })}
-                </div>
-              )}
-              <div className="flex flex-wrap gap-2 pt-12">
-                {tags.map((tag) => (
-                  <Badge key={tag}>
-                    <a
-                      href={`https://www.reciperium.com/recipes?search=${tag}`}
-                      target="_blank"
-                      className="after:content-['_↗']"
-                    >
-                      {tag}
-                    </a>
-                  </Badge>
-                ))}
-              </div>
+            <div className="lg:w-1/2">
+              <RecipeCard parsedRecipe={parsedRecipe} rawRecipe={recipe} />
             </div>
             {/* End "Render recipe" */}
           </div>

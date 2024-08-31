@@ -6,6 +6,7 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    "./node_modules/@reciperium/**/*.{ts,tsx,js,jsx}",
   ],
   prefix: "",
   theme: {
@@ -53,6 +54,9 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        link: {
+          DEFAULT: "hsl(var(--link))",
         },
       },
       borderRadius: {
