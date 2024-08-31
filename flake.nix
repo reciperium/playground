@@ -21,18 +21,36 @@
 
       systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { config, self', inputs', pkgs, system, ... }:
+        let
+          nodejs = pkgs.nodejs_20;
+        in
         {
+          packages = {
+            playground = pkgs.buildNpmPackage {
+              name = "playground";
+              src = gitignore.lib.gitignoreSource ./.;
+              npmDeps = pkgs.importNpmLock {
+                npmRoot = ./.;
+              };
+              npmConfigHook = pkgs.importNpmLock.npmConfigHook;
+
+              nativeBuildInputs = [ nodejs ];
+              buildPhase = ''
+                ${nodejs}/bin/npm run build --unsafe-perm=true
+              '';
+              installPhase = ''
+                mkdir -p $out
+                cp -R dist/* $out
+              '';
+            };
+          };
+
           devenv.shells.default = {
             name = "reciperium-playground";
 
             packages = with pkgs; [
               just
               nodejs_20
-            ] ++ lib.optionals stdenv.isDarwin [
-              libiconv
-              darwin.apple_sdk_11_0.frameworks.Cocoa
-              darwin.apple_sdk_11_0.frameworks.CoreServices
-              darwin.apple_sdk_11_0.frameworks.Security
             ];
           };
         };
