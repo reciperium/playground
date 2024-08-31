@@ -316,18 +316,25 @@ function App() {
             <div className="flex flex-col gap-4 text-left">
               <h3 className="text-lg">Resources</h3>
               <a
-                href="https://github.com/reciperium/recipe-lang/blob/main/spec.md"
-                className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
-                target="_blank"
-              >
-                Recipe Lang Specification
-              </a>
-              <a
                 href="https://www.reciperium.com"
                 className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
                 target="_blank"
               >
                 Reciperium
+              </a>
+              <a
+                href="https://learn.reciperium.com"
+                className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
+                target="_blank"
+              >
+                Learn to write recipes
+              </a>
+              <a
+                href="https://github.com/reciperium/recipe-lang/blob/main/spec.md"
+                className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
+                target="_blank"
+              >
+                Recipe Lang Specification
               </a>
             </div>
             <div className="flex flex-col justify-center justify-self-center self-end">
