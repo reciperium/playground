@@ -99,6 +99,11 @@ function App() {
             {/* Start "Render recipe" */}
             <div className="lg:w-1/2">
               <RecipeCard parsedRecipe={parsedRecipe} rawRecipe={recipe} />
+              {parsedRecipe.backstory && (
+                <div className="relative rounded-md border bg-muted p-6 border-slate-400 dark:border-slate-500 shadow-lg mt-6 hover:shadow-xl transition duration-400">
+                  {parsedRecipe.backstory}
+                </div>
+              )}
             </div>
             {/* End "Render recipe" */}
           </div>

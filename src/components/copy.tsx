@@ -10,7 +10,7 @@ export function CopyButton({ value }: Props) {
       variant="outline"
       onClick={() => navigator.clipboard.writeText(value)}
       title="Copy recipe text"
-      className="flex gap-2"
+      className="flex gap-2 hover:shadow-lg transition duration-200"
     >
       <Copy size={16} /> Copy
     </Button>

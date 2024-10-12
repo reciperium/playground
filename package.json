@@ -16,7 +16,7 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@reciperium/react-recipe": "^0.10.0",
-    "@reciperium/recipe-parser-wasm": "^0.1.4",
+    "@reciperium/recipe-parser-wasm": "^0.1.11",
     "@uiw/codemirror-themes": "^4.23.5",
     "@uiw/react-codemirror": "^4.23.5",
     "class-variance-authority": "^0.7.0",

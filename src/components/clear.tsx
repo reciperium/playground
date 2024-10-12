@@ -10,7 +10,7 @@ export function ClearButton({ onClick }: Props) {
       variant="outline"
       onClick={onClick}
       title="Clear recipe"
-      className="flex gap-2"
+      className="flex gap-2 hover:shadow-lg transition duration-200"
     >
       <Trash size={16} /> Clear
     </Button>
