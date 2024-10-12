@@ -80,7 +80,7 @@ function App() {
               >
                 <Editor
                   error={error}
-                  className="w-full h-full font-sans border rounded-sm bg-background"
+                  className="w-full h-full font-sans bg-background"
                   value={recipe}
                   onChange={onChange}
                 />
@@ -110,9 +110,16 @@ function App() {
       <div className="flex flex-col w-full gap-4 items-center justify-center p-6 md:py-12 bg-gray-100 dark:bg-gray-800 inset-x-0 relative ">
         <div className="container max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-8 text-sm justify-between w-full">
           <div className="flex flex-col gap-4">
-            <h2 className="text-xl">Reciperium</h2>
+            <h2 className="text-xl">Reciperium Playground</h2>
             <p className="text-gray-600 dark:text-gray-400">
-              A platform for sharing and discovering recipes.
+              Play with the recipe language used at{" "}
+              <a
+                href="https://www.reciperium.com"
+                className="text-blue-500 hover:text-blue-600 after:content-['_↗']"
+                target="_blank"
+              >
+                Reciperium
+              </a>
             </p>
             <p className="text-gray-600 dark:text-gray-400">
               Built with ❤️ by{" "}
