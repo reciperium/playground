@@ -12,17 +12,28 @@
 
   };
 
-  outputs = inputs@{ flake-parts, nixpkgs, gitignore, ... }:
+  outputs =
+    inputs@{
+      flake-parts,
+      nixpkgs,
+      gitignore,
+      ...
+    }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       debug = true;
       imports = [
         inputs.devenv.flakeModule
       ];
 
-      systems = [ "x86_64-linux" "aarch64-darwin" "x86_64-darwin" ];
-      perSystem = { config, self', inputs', pkgs, system, ... }:
+      systems = [
+        "x86_64-linux"
+        "aarch64-darwin"
+        "x86_64-darwin"
+      ];
+      perSystem =
+        { pkgs, ... }:
         let
-          nodejs = pkgs.nodejs_20;
+          nodejs = pkgs.nodejs_24;
         in
         {
           packages = {
@@ -44,13 +55,11 @@
               '';
             };
           };
-
-          devenv.shells.default = {
+          devShells.default = pkgs.mkShell {
             name = "reciperium-playground";
-
-            packages = with pkgs; [
+            buildInputs = with pkgs; [
+              nodejs
               just
-              nodejs_20
             ];
           };
         };
