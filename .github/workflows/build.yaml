@@ -5,18 +5,18 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build and Release
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: DeterminateSystems/nix-installer-action@main
-        with:
-          extra-conf: |
-            substituters = root ${{ github.actor }} https://cache.nixos.org
-            sandbox = relaxed
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - run: |
           nix build --fallback --system x86_64-linux --option sandbox relaxed .#playground --json --out-link static
