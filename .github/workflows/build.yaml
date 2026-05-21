@@ -16,10 +16,13 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v6
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - run: |
-          nix build --fallback --system x86_64-linux --option sandbox relaxed .#playground --json --out-link static
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Restore and save Nix store
+        uses: nix-community/cache-nix-action@v7
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
