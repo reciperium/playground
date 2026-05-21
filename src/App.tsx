@@ -6,6 +6,7 @@ import { ind } from "@reciperium/react-recipe";
 import Editor from "./components/editor";
 import { ClearButton } from "./components/clear";
 import { CopyButton } from "./components/copy";
+import { InfoButton } from "./components/info";
 
 const BaseRecipe = ind`>> tags: vegan, high-protein, high-fiber
 >> lang: en
@@ -72,10 +73,10 @@ function App() {
         <div className="flex flex-col space-y-4 ">
           <div className="flex flex-col lg:flex-row justify-center gap-6 ">
             {/* Start "Recipe text" */}
-            <div className="flex flex-col rounded-md lg:w-1/2 text-wrap md:h-[300px]">
+            <div className="flex flex-col rounded-md lg:w-1/2 text-wrap md:h-75">
               <Suspense
                 fallback={
-                  <div className="h-[300px] animate-pulse bg-slate-100 rounded-md" />
+                  <div className="h-75 animate-pulse bg-slate-100 rounded-md" />
                 }
               >
                 <Editor
@@ -91,6 +92,7 @@ function App() {
                 </p>
               </div>
               <div className="flex gap-4 justify-end">
+                <InfoButton />
                 <ClearButton onClick={() => setRecipe("")} />
                 <CopyButton value={recipe} />
               </div>
