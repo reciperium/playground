@@ -23,6 +23,8 @@ jobs:
         uses: nix-community/cache-nix-action@v7
         with:
           primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
+      - run: |
+          nix build --fallback --system x86_64-linux --option sandbox relaxed .#playground --json --out-link static
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:

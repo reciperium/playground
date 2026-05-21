@@ -24,4 +24,4 @@ jobs:
         with:
           primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
       - run: |
-          nix build --fallback --system x86_64-linux --option sandbox relaxed .#learn-reciperium --json --out-link static
+          nix build --fallback --system x86_64-linux --option sandbox relaxed .#playground --json --out-link static
